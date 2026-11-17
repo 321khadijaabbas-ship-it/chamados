@@ -1,4 +1,5 @@
 <Solution>
+  <Folder Name="/Itens de Solução/" />
   <Folder Name="/src/">
     <Project Path="src/Chamados.Domain/Chamados.Domain.csproj" />
     <Project Path="src/Chamados.Web/Chamados.Web.csproj" />
