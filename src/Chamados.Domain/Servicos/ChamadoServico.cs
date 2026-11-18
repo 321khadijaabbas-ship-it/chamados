@@ -14,6 +14,9 @@ public sealed class ChamadoServico(IChamadoRepositorio repositorio, TimeProvider
         await repositorio.AdicionarAsync(chamado, cancellationToken);
         return chamado;
     }
+    /// <summary>Consulta um chamado. Devolve null quando o Id não existe.</summary>
+    public Task<Chamado?> ObterAsync(Guid id, CancellationToken cancellationToken = default)
+        => repositorio.ObterAsync(id, cancellationToken);
 
     public Task<Chamado> IniciarAtendimentoAsync(Guid id, string responsavel, CancellationToken cancellationToken = default)
         => AlterarAsync(id, chamado => chamado.IniciarAtendimento(responsavel, relogio.GetUtcNow()), cancellationToken);

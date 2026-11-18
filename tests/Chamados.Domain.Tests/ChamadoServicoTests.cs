@@ -97,4 +97,56 @@ public class ChamadoServicoTests
         await Assert.ThrowsAnyAsync<OperationCanceledException>(
             () => s.ListarAsync(FiltroChamados.Todos, cts.Token));
     }
+    [Fact]
+    
+    public async Task ObterAsync_IdExistente_DevolveOChamado()
+    {
+        var (s, _) = Criar();
+        var aberto = await s.AbrirAsync(new NovoChamado("Tomada solta"));
+
+        var encontrado = await s.ObterAsync(aberto.Id);
+
+        Assert.Same(aberto, encontrado);
+    }
+
+    [Fact]
+    public async Task ObterAsync_IdInexistente_DevolveNull()
+    {
+        var (s, _) = Criar();
+
+        Assert.Null(await s.ObterAsync(Guid.NewGuid()));
+    }
+    [Fact]
+    public async Task AbrirAsync_UsaHorarioDoRelogio()
+    {
+        var (s, _) = Criar();
+
+        var chamado = await s.AbrirAsync(new NovoChamado("Tomada solta"));
+
+        Assert.Equal(Inicio, chamado.CriadoEm);
+    }
+
+    [Fact]
+    public async Task ObterEstatisticasAsync_SemResolvidos_TempoMedioNulo()
+    {
+        var (s, _) = Criar();
+        await s.AbrirAsync(new NovoChamado("C1"));
+
+        var estatisticas = await s.ObterEstatisticasAsync();
+
+        Assert.Null(estatisticas.TempoMedioResolucao);
+    }
+
+    [Fact]
+    public void FiltroChamados_ComWith_CriaCopiaSemAlterarOriginal()
+    {
+        var original = new FiltroChamados(Status: StatusChamado.Aberto);
+
+        var copia = original with { Texto = "sala" };
+
+        Assert.Null(original.Texto);
+        Assert.Equal(StatusChamado.Aberto, copia.Status);
+        Assert.NotEqual(original, copia);
+        Assert.Equal(new FiltroChamados(Status: StatusChamado.Aberto), original);
+    }
 }
